@@ -11,7 +11,9 @@
     <script>
         const FPS = 30
         const SHIP_SIZE = 30
+        const SHIP_THRUST = 5 // acceleration in px per second per second
         const TURN_SPEED = 360 // degrees per second
+        const FRICTION = 0.7 // friction coeff. 0 = no friction
 
         const canv = document.querySelector('#gameCanvas')
         const ctx = canv.getContext('2d')
@@ -21,7 +23,12 @@
             y: canv.clientHeight / 2,
             r: SHIP_SIZE / 2,
             a: 90 / 180 * Math.PI,
-            rot: 0
+            rot: 0,
+            thrusting: false,
+            thrust: {
+                x: 0,
+                y: 0
+            }
         }
 
         // movements
@@ -37,7 +44,7 @@
                     ship.rot = TURN_SPEED / 180 * Math.PI / FPS
                     break
                 case 38: // up arrow
-
+                    ship.thrusting= true
                     break
                 case 39: // right arrow
                     ship.rot = -TURN_SPEED / 180 * Math.PI / FPS
@@ -51,7 +58,7 @@
                     ship.rot = 0
                     break
                 case 38: // stop up arrow
-
+                    ship.thrusting= false
                     break
                 case 39: // stop right arrow
                     ship.rot = 0
@@ -63,6 +70,15 @@
             // draw space
             ctx.fillStyle = 'black'
             ctx.fillRect(0, 0, canv.clientWidth, canv.clientHeight)
+
+            // thrust the ship
+            if(ship.thrusting) {
+                ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS
+                ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS
+            } else {
+                ship.thrust.x -= FRICTION * ship.thrust.x / FPS
+                ship.thrust.y -= FRICTION * ship.thrust.y / FPS
+            }
 
             // draw ship
             ctx.strokeStyle = 'white'
@@ -91,6 +107,8 @@
             ship.a += ship.rot
 
             // move ship
+            ship.x += ship.thrust.x
+            ship.y += ship.thrust.y
 
 
         }
