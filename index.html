@@ -11,6 +11,7 @@
     <script>
         const FPS = 30
         const SHIP_SIZE = 30
+        const TURN_SPEED = 360 // degrees per second
 
         const canv = document.querySelector('#gameCanvas')
         const ctx = canv.getContext('2d')
@@ -19,11 +20,44 @@
             x: canv.clientWidth / 2,
             y: canv.clientHeight / 2,
             r: SHIP_SIZE / 2,
-            a: 90 / 180 * Math.PI
+            a: 90 / 180 * Math.PI,
+            rot: 0
         }
+
+        // movements
+        document.addEventListener('keydown', keyDown)
+        document.addEventListener('keyup', keyUp)
 
         // game loop
         setInterval(update, 1000 / FPS)
+
+        function keyDown(e) {
+            switch(e.keyCode) {
+                case 37: // left arrow
+                    ship.rot = TURN_SPEED / 180 * Math.PI / FPS
+                    break
+                case 38: // up arrow
+
+                    break
+                case 39: // right arrow
+                    ship.rot = -TURN_SPEED / 180 * Math.PI / FPS
+                    break
+            }
+        }
+
+        function keyUp(e) {
+            switch(e.keyCode) {
+                case 37: // stop left arrow
+                    ship.rot = 0
+                    break
+                case 38: // stop up arrow
+
+                    break
+                case 39: // stop right arrow
+                    ship.rot = 0
+                    break
+            }
+        }
 
         function update() {
             // draw space
@@ -54,6 +88,7 @@
             ctx.fillRect(ship.x -1, ship.y -1, 2, 2)
 
             // rotate ship
+            ship.a += ship.rot
 
             // move ship
 
